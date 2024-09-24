@@ -1,0 +1,89 @@
+<mat-card appearance="outlined" style="margin: 1rem;">
+
+  <mat-card-content>
+    <div style="margin: 1rem;">
+      <div style="display: flex; margin: auto; gap: 1rem;">
+        <mat-form-field appearance="outline">
+          <mat-label>Seliect</mat-label>
+          <mat-select [(ngModel)]="filterField">
+            <mat-option value="id">ID</mat-option>
+            <mat-option value="name">Name</mat-option>
+            <mat-option value="date">Date</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        @if (filterField) {
+          <mat-form-field appearance="outline">
+            <mat-label>Enter {{ filterField | titlecase }}</mat-label>
+            <input matInput [(ngModel)]="filterValue" (ngModelChange)="applyFilter()">
+          </mat-form-field>
+        }
+      </div>
+
+      <span style="flex: 1 1 auto;"></span>
+
+      <button mat-icon-button (click)="onAdd(dialogRef)">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button mat-icon-button (click)="onUpdate(dialogRef)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button (click)="exportPfd()">
+        <mat-icon>download</mat-icon>
+      </button>
+      <button mat-icon-button (click)="onDelete()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+
+    <table mat-table [dataSource]="filterData">
+
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef> Select </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-checkbox [(ngModel)]="element.selected" (change)="onCheckboxChange(element)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> No. </th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef> Date </th>
+        <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card-content>
+</mat-card>
+
+<ng-template #dialogRef>
+  <h2 mat-dialog-title>{{ rowSelected ? 'Edit' : 'Create' }} Item</h2>
+  <mat-dialog-content [formGroup]="form">
+    <p>{{ rowSelected ? 'Edit' : 'Create' }}</p>
+    <mat-form-field style="margin-right: 1rem;">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Date</mat-label>
+      <input matInput formControlName="date" [matDatepicker]="picker">
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onSubmit()"  cdkFocusInitial>Submit</button>
+  </mat-dialog-actions>
+</ng-template>
